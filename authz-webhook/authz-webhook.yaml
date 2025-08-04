@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Config
+clusters:
+  - name: aap-webhooks
+    cluster:
+      certificate-authority: /var/lib/minikube/certs/webhook.crt
+      server: https://aap-webhooks/authorize
+# users refers to the API Server's webhook configuration.
+users:
+  - name: minikube
+    user:
+      token: test-token
+
+# kubeconfig files require a context. Provide one for the API Server.
+current-context: minikube
+contexts:
+  - context:
+      cluster: aap-webhooks
+      user: minikube
+    name: minikube

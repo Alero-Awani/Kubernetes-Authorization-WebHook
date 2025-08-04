@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Config
+clusters:
+  - name: serverless-authz
+    cluster:
+      certificate-authority: /files/webhook.crt
+      server: SERVERLESS_ENDPOINT
+users:
+  - name: authz-user
+    user:
+    token: test-token
+current-context: webhook
+contexts:
+  - context:
+      cluster: serverless-authz
+      user: authz-user
+    name: webhook
