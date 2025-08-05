@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: |
+  A Serverless Kubernetes Authorization Webhook.
+  Determines whether a user is authorized to perform an action.
+
+Parameters:
+  LogLevel:
+    Type: String
+    Description: Log level for the function.
+    AllowedValues: ["DEBUG", "INFO", "WARN", "ERROR"]
+    Default: INFO
+
+Resources:
+  AuthorizationWebhookRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [lambda.amazonaws.com]
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  AuthorizationWebhookAPI:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: Prod
+
+  AuthorizationLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: authorization-webhook-handler
+      Handler: main # or app.lambda_handler, depending on language
+      Runtime: go1.x # or python3.12, nodejs18.x, etc.
+      Timeout: 5
+      MemorySize: 128
+      Role: !GetAtt AuthorizationWebhookRole.Arn
+      Environment:
+        Variables:
+          LOG_LEVEL: !Ref LogLevel
+      Events:
+        AuthZEvent:
+          Type: HttpApi
+          Properties:
+            Path: /authorize
+            Method: POST
+            ApiId: !Ref AuthorizationWebhookAPI
+
+  AuthorizationLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref AuthorizationLambdaFunction
+      Principal: apigateway.amazonaws.com
+
+Outputs:
+  WebhookURL:
+    Description: "Authorization webhook endpoint URL"
+    Value: !Sub "https://${AuthorizationWebhookAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/authorize"

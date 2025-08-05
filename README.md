@@ -121,7 +121,7 @@ To generate the self-signed certificates using OpenSSL:
       --extra-config=apiserver.authorization-webhook-cache-unauthorized-ttl=30s
     ```
 
-    - `--extra-config=apiserver.authorization-mode`: 
+    - `--extra-config=apiserver.authorization-mode`: Specify the configuration modes that will be used by the apiserver
 
     - `--authorization-webhook-config-file`: The configuration file to describe how to access and query the webhook server.
 
@@ -131,7 +131,6 @@ To generate the self-signed certificates using OpenSSL:
 
     - `--authorization-webhook-version`. It sets the api version of the authorization. [`k8s.io](http://k8s.io/) SubjectAccessReview` to send to and expect from the webhook.
 
-
 ### Build and Deploy the Authorization Webhook Server Container
 
 1. Build the docker image
@@ -139,7 +138,6 @@ To generate the self-signed certificates using OpenSSL:
     ```sh
     docker build --no-cache -t kube-webhook-authz .
     ```
-
 
 2. Run the server in a container
 
@@ -153,7 +151,6 @@ To generate the self-signed certificates using OpenSSL:
 
 Here we'll do something fun by querying the API server with postman to see if our webhook server works.
 
-
 ### Webhook Server
 
 - Kubernetes API server calls the webhook server by sending a `SubjectAccessReview` object to describe the action to be checked. The sent JSON object contains information about the resource, user, and request attributes
@@ -166,7 +163,6 @@ There are two methods to deny a request in webhook servers. The first method onl
 
 2. `Rejected and denied response`: The second approach is to deny any request immediately and bypassing the remaining authorization modules. This sets both the "allowed" and "denied" field.
 
-
 ### Webhook Server Golang Service
 
 1. Install the Kubernetes api package using the command below:
@@ -176,7 +172,6 @@ go get "k8s.io/api/authorization/v1"
 ```
 
 ![webhook authorization logic](images/carbon.png)
-
 
 ### Testing with Kubectl
 
@@ -216,6 +211,9 @@ Here we will see how we can use this [Kubernetes Postman Library] to query our A
     kubectl proxy --port=6443
     ```
 
-2. In Postman, set the baseUrl, amespace and generated service account token.
+2. In Postman, set the baseUrl and namespace.
 
 ![postman request](images/postman.png)
+
+## Creating a Serverless Admission Webhook with API Gateway and Lambda
+
