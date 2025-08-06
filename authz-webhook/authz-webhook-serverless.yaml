@@ -1,17 +1,20 @@
 apiVersion: v1
 kind: Config
 clusters:
-  - name: serverless-authz
+  - name: aap-webhooks
     cluster:
-      certificate-authority: /files/webhook.crt
-      server: SERVERLESS_ENDPOINT
+      certificate-authority: /var/lib/minikube/certs/webhook.crt
+      server: https://aap-webhooks/authorize
+# users refers to the API Server's webhook configuration.
 users:
-  - name: authz-user
+  - name: minikube
     user:
-    token: test-token
-current-context: webhook
+      token: test-token
+
+# kubeconfig files require a context. Provide one for the API Server.
+current-context: minikube
 contexts:
   - context:
-      cluster: serverless-authz
-      user: authz-user
-    name: webhook
+      cluster: aap-webhooks
+      user: minikube
+    name: minikube

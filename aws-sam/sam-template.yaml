@@ -28,15 +28,16 @@ Resources:
   AuthorizationWebhookAPI:
     Type: AWS::Serverless::HttpApi
     Properties:
-      StageName: Prod
+      StageName: test
+      Description: Authorization Webhook API
 
   AuthorizationLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: authorization-webhook-handler
-      Handler: main # or app.lambda_handler, depending on language
-      Runtime: go1.x # or python3.12, nodejs18.x, etc.
-      Timeout: 5
+      Handler: main
+      Runtime: go1.x
+      Timeout: 200
       MemorySize: 128
       Role: !GetAtt AuthorizationWebhookRole.Arn
       Environment:
@@ -60,4 +61,4 @@ Resources:
 Outputs:
   WebhookURL:
     Description: "Authorization webhook endpoint URL"
-    Value: !Sub "https://${AuthorizationWebhookAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/authorize"
+    Value: !Sub "https://${AuthorizationWebhookAPI}.execute-api.${AWS::Region}.amazonaws.com/test/authorize"

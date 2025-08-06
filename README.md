@@ -217,3 +217,4 @@ Here we will see how we can use this [Kubernetes Postman Library] to query our A
 
 ## Creating a Serverless Admission Webhook with API Gateway and Lambda
 
+The Kubernetes cluster connects to this function through an Amazon API Gateway endpoint. 
